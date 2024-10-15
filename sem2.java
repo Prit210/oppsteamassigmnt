@@ -3,10 +3,10 @@
 //import java.util.Scanner;
 //
 //
-//public class sem1 implements sem {
+//public class sem2 implements sem {
 //    private ArrayList<course>courses;
 //    private int total_courses;
-//    public sem1()
+//    public sem2()
 //    {
 //        Scanner sc=new Scanner(System.in);
 //        System.out.println("enter no of couses : ");
