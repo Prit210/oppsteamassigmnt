@@ -3,10 +3,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Administrator extends User {
-    public Administrator(String email, String password) {
-        super(email, password);
+    final static String email = "dyadav15112005@gmail.com";
+    final static String password = "12345";
+
+    public Administrator(String e, String p) {
+        super(e, p);  // Assuming the superclass has this constructor
+        if (e.equals(email) && p.equals(password)) {
+        } else {
+            System.out.println("Invalid email or password");
+            System.exit(0);
+        }
     }
 
     public void manageCourseCatalog() {
@@ -18,91 +29,50 @@ public class Administrator extends User {
         System.out.print("Choose an option: ");
         int choice = scanner.nextInt();
         scanner.nextLine();  // Consume newline
-
+        courseManager mn = new courseManager();
         switch (choice) {
             case 1:
-                addCourse(scanner);
+                mn.addCourse(scanner);
                 break;
             case 2:
-                updateCourse(scanner);
+                mn.updateCourse(scanner);
                 break;
             case 3:
-                deleteCourse(scanner);
+                mn.deleteCourse(scanner);
                 break;
             default:
                 System.out.println("Invalid choice.");
         }
     }
-
-    private void addCourse(Scanner scanner) {
-        System.out.print("Enter Course Code: ");
-        String courseCode = scanner.nextLine();
-        System.out.print("Enter Course Name: ");
-        String courseName = scanner.nextLine();
-
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO courses (course_code, course_name) VALUES (?, ?)";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, courseCode);
-            statement.setString(2, courseName);
-
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Course added successfully.");
-            } else {
-                System.out.println("Failed to add course.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void updateCourse(Scanner scanner) {
-        System.out.print("Enter Course Code to update: ");
-        String courseCode = scanner.nextLine();
-        System.out.print("Enter New Course Name: ");
-        String newCourseName = scanner.nextLine();
-
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE courses SET course_name = ? WHERE course_code = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, newCourseName);
-            statement.setString(2, courseCode);
-
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Course updated successfully.");
-            } else {
-                System.out.println("Failed to update course or course not found.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void deleteCourse(Scanner scanner) {
-        System.out.print("Enter Course Code to delete: ");
-        String courseCode = scanner.nextLine();
-
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "DELETE FROM courses WHERE course_code = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, courseCode);
-
-            int rowsAffected = statement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Course deleted successfully.");
-            } else {
-                System.out.println("Failed to delete course or course not found.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void manageStudentRecords() {
-        // Similar to manage courses but for students
+         Scanner scanner = new Scanner(System.in);
+        System.out.println("\nStudent changes:");
+        System.out.println("1. ADD students : ");
+        System.out.println("2. UPDATE students");
+        System.out.println("3. DELETE students : ");
+        System.out.println("4. Logout");
+        System.out.print("Choose an option: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+        studentManager sn=new studentManager();
+        switch (choice) {
+            case 1:
+                sn.addStudent(scanner);
+                break;
+            case 2:
+                sn.updateStudent(scanner);
+                break;
+            case 3:
+                sn.deleteStudent(scanner);
+                break;
+            case 4:
+                System.out.println("Logging out...");
+                return; // Exit the student menu
+            default:
+                System.out.println("Invalid choice.");
+        }
     }
+
 
     public void assignProfessors() {
         Scanner scanner = new Scanner(System.in);
@@ -113,20 +83,69 @@ public class Administrator extends User {
 
         // Assigning professor to the course logic goes here
     }
-
     public void handleComplaints() {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "SELECT * FROM complaints";
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet resultSet = statement.executeQuery();
+        Scanner scanner= new Scanner(System.in);
+        System.out.println("\nComplain options :");
+        System.out.println("1. View complain : ");
+        System.out.println("2. resolve complain : ");
+        System.out.println("3. Logout");
+        System.out.print("Choose an option: ");
+        int choice = scanner.nextInt();// Consume newline
 
-            System.out.println("Pending Complaints:");
-            while (resultSet.next()) {
-                System.out.println("Complaint ID: " + resultSet.getInt("complaint_id") +
-                        ", Complaint: " + resultSet.getString("complaint_text"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        switch (choice) {
+            case 1:
+                try (Connection connection = DatabaseConnection.getConnection()) {
+                    String query = "SELECT * FROM complaints";
+                    PreparedStatement statement = connection.prepareStatement(query);
+                    ResultSet resultSet = statement.executeQuery();
+
+                    System.out.println("Pending Complaints:");
+                    while (resultSet.next()) {
+                        System.out.println("Complaint ID: " + resultSet.getInt("complaint_id") +
+                                ", Complaint: " + resultSet.getString("complaint_text"));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 2:
+                try (Connection connection = DatabaseConnection.getConnection()) {
+                    String query = "SELECT * FROM complaints";
+                    PreparedStatement statement = connection.prepareStatement(query);
+                    ResultSet resultSet = statement.executeQuery();
+
+                    System.out.println("Pending Complaints:");
+                    while (resultSet.next()) {
+                        System.out.println("Complaint ID: " + resultSet.getInt("complaint_id") +
+                                ", Complaint: " + resultSet.getString("complaint_text"));
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+//                System.out.println();
+                System.out.println("compalint to resolve id : ");
+                int y=scanner.nextInt();
+//                scanner.nextInt();
+                try (Connection connection = DatabaseConnection.getConnection()) {
+                    String query = "DELETE FROM complaints WHERE complaint_id = ?";
+                    PreparedStatement statement = connection.prepareStatement(query);
+                    statement.setInt(1, y);
+
+                    int rowsAffected = statement.executeUpdate();
+                    if (rowsAffected > 0) {
+                        System.out.println("Complaint resolved successfully.");
+                    } else {
+                        System.out.println("Failed to resolve compalin.");
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 3:
+                return;
+            default:
+                System.out.println("Invalid choice.");
         }
+
     }
 }
